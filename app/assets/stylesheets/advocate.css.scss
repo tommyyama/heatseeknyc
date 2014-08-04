@@ -15,10 +15,6 @@
 	font-family: 'Source Sans Pro', 'sans-serif';
 }
 
-.sidebar-li{
-	padding: 7px 0 7px 7px;
-}
-
 .collaborators-sidebar .sidebar-li {
 	cursor: pointer;
 }
@@ -55,6 +51,16 @@
 
 #collaborator-ul{
 	padding: 0;
+}
+
+.sidebar-li{
+	padding: 13px 0 7px 15px;
+}
+
+.fa-user.fa.fa-2x {
+  font-size: 51px;
+  float: left;
+  padding-right: 15px;
 }
 
 #wrench{

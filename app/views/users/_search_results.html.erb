@@ -3,6 +3,7 @@
   <ul id="collaborator-ul" class="search-results-ul">
     <% @results.each do |r| %>
       <li class="sidebar-li">
+        <i class="fa fa-user fa-2x"></i>
         <a href="/users/<%= r.id %>" class="user-link"><%= r.first_name %> <%= r.last_name %></a>
         <p class="address_zip"><%= "#{r.address}, #{r.zip_code}" %></p>
         <%= link_to "", user_collaborations_path(current_user, collaborator_id: r), method: :post, :class => "fa fa-plus add-user-link" %>
