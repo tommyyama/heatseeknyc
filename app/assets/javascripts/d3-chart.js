@@ -53,16 +53,16 @@ function draw(response) {
 
   svg = d3.select('#d3-chart')
       .append('svg:svg')
-      .attr('width', w - margin)
+      .attr('width', w - margin * 2)
       .attr('height', h)
-      .attr('id', 'main-svg')
-      .attr('transform', 'translate(' + margin + ',' + margin + ')');
+      .attr('id', 'main-svg');
+      // .attr('transform', 'translate(' + margin + ',' + margin + ')');
       // .append('svg:g')
 
   // t = svg.transition().duration(transitionDuration);
 
   function addLineStlyingToXTicks(){
-    var $lines = $(".xTick .tick line"),
+    var $lines = $('.xTick .tick line'),
         length = data.length,
         date,
         newText,
@@ -81,12 +81,12 @@ function draw(response) {
         // add dates to bottom of graph
         if ( data[i].date.getHours() === 16 ) {
           date = data[i].date;
-          newText = abbreviatedMonthNames[date.getMonth()] + " " 
-            + date.getDate() + ", " + (date.getYear() + 1900);
-          $textEl = $($(".xTick .tick text")[i]);
+          newText = abbreviatedMonthNames[date.getMonth()] + ' ' 
+            + date.getDate() + ', ' + (date.getYear() + 1900);
+          $textEl = $($('.xTick .tick text')[i]);
           $textEl.text(newText);
           $textEl.show();
-          $textEl.attr({"x": -15, "y": 380});
+          $textEl.attr({'x': -15, 'y': 380});
         }
       }
     }
@@ -107,7 +107,7 @@ function draw(response) {
 // y ticks and labels gets placed second
   // y ticks and labels
   if (!yAxisGroup) {
-    yAxisGroup = svg.append('svg:svg')
+    yAxisGroup = svg.append('svg:g')
       .attr('class', 'yTick')
       .call(yAxis);
   }
@@ -115,7 +115,8 @@ function draw(response) {
     t.select('.yTick').call(yAxis);
   }
   // fixes x value for text
-  $(".yTick .tick text").attr("x", "-5")
+  $(".yTick .tick text").attr("x", "15")
+
 
 // y ticks and labels gets placed third
   // Draw the lines
@@ -139,14 +140,14 @@ function draw(response) {
   dataLines
     .enter()
     .append('svg:path')
-    .attr("class", "area");
-    // .attr("d", garea(data));
+    .attr('class', 'area');
+    // .attr('d', garea(data));
 
   dataLines.enter().append('path')
     .attr('class', 'data-line')
     // comment back in for low to high opacity transitions
     // .style('opacity', 0.3)
-    .attr("d", line(data))
+    .attr('d', line(data))
     // .transition()
     // .delay(transitionDuration / 2)
     // .duration(transitionDuration)
@@ -154,35 +155,33 @@ function draw(response) {
     
   // comment back in for slide up transition 
   // dataLines.transition()
-  //   .attr("d", line)
+  //   .attr('d', line)
   //   .duration(transitionDuration)
   //   .style('opacity', 1)
-  //   .attr("transform", function(d) {
-  //     return "translate(" + x(d.date) + "," + y(d.temp) + ")"; 
+  //   .attr('transform', function(d) {
+  //     return 'translate(' + x(d.date) + ',' + y(d.temp) + ')'; 
   //   });
 
   dataLines.exit()
     .transition()
-    .attr("d", line)
+    .attr('d', line)
     .duration(transitionDuration)
-    .attr("transform", function(d) {
-     return "translate(" + x(d.date) + "," + y(0) + ")"; 
+    .attr('transform', function(d) {
+     return 'translate(' + x(d.date) + ',' + y(0) + ')'; 
     })
     .style('opacity', 1e-6)
     .remove();
 
-  d3.selectAll(".area")
-  //   .transition()
-  //   .duration(transitionDuration)
-    .attr("d", garea(data));
+  d3.selectAll('.area')
+    .attr('d', garea(data));
 
   // move the area to the back of the graph
-  var $garea = $(".area").last();
-  $("#main-svg").prepend($garea);
+  var $garea = $('.area').last();
+  $('#main-svg').prepend($garea);
 
 
   // add number of violations to the legend
-  $("#violations span").text($("#violations span")
+  $('#violations span').text($('#violations span')
     .text().replace(/\d+/, violations));
 
 
