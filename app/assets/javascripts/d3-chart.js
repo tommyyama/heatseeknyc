@@ -53,7 +53,7 @@ function draw(response) {
 
   svg = d3.select('#d3-chart')
       .append('svg:svg')
-      .attr('width', w)
+      .attr('width', w - margin)
       .attr('height', h)
       .attr('id', 'main-svg')
       .attr('transform', 'translate(' + margin + ',' + margin + ')');
@@ -126,23 +126,15 @@ function draw(response) {
   var dataLines = dataLinesGroup.selectAll('.data-line').data([data]);
 
   var line = d3.svg.line()
-    .x(function(d,i) {
-      return x(d.date); 
-    })
-    .y(function(d) {
-      return y(d.temp); 
-    })
+    .x(function(d,i) { return x(d.date); })
+    .y(function(d) { return y(d.temp); })
     .interpolate("linear");
 
   var garea = d3.svg.area()
     .interpolate("linear")
-    .x(function(d) { 
-      return x(d.date); 
-    })
+    .x(function(d) { return x(d.date); })
     .y0(h - margin * 2)
-    .y1(function(d) { 
-      return y(d.outdoor_temp); 
-    });
+    .y1(function(d) { return y(d.outdoor_temp); });
 
   dataLines
     .enter()
@@ -194,8 +186,8 @@ function draw(response) {
     .text().replace(/\d+/, violations));
 
 
-  if (violations) {
   // Draw the circles if there are any violations
+  if (violations) {
     if (!dataCirclesGroup) {
       dataCirclesGroup = svg.append('svg:g');
     }
@@ -267,7 +259,7 @@ function draw(response) {
     .attr("x1", 0)
     .attr("y1", 0)
     .attr("x2", 0)
-    .attr("y2", h)
+    .attr("y2", h - margin * 2)
     .attr("stroke-width", 5)
     .attr("stroke", "black")
     .style('display', 'none')
