@@ -207,35 +207,16 @@ function draw(response) {
       .attr('class', 'data-point')
       .style('opacity', 1)
       .attr('cx', function(d) { return x(d.date) })
-      .attr('cy', function() { return y(0) })
+      // comment back in for cirlce transitions
+      // .attr('cy', function() { return y(0) })
       .attr('r', function(d) {
         return d.violation ? pointRadius : 0;
       })
-      .transition()
-      .duration(transitionDuration)
-      .style('opacity', 1)
-      .attr('cx', function(d) { return x(d.date) })
+      // .transition()
+      // .duration(transitionDuration)
+      // .style('opacity', 1)
+      // .attr('cx', function(d) { return x(d.date) })
       .attr('cy', function(d) { return y(d.temp) });
-
-    // circles
-    //   .transition()
-    //   .duration(transitionDuration)
-    //   .attr('cx', function(d) { return x(d.date) })
-    //   .attr('cy', function(d) { return y(d.temp) })
-    //   .attr('r', function(d) { 
-    //     return d.violation ? pointRadius : null
-    //   })
-    //   .style('opacity', 1);
-
-    circles
-      .exit()
-      .transition()
-      .duration(transitionDuration)
-      // Leave the cx transition off. Allowing the points to fall where they lie is best.
-      //.attr('cx', function(d, i) { return xScale(i) })
-      .attr('cy', function() { return y(0) })
-      .style("opacity", 1e-6)
-      .remove();
   }
 
   function legalMinimumFor(reading){
