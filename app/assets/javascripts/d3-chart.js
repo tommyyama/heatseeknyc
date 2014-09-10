@@ -51,18 +51,15 @@ function draw(response) {
   var t = null,
   strokeWidth = w / data.length;
 
-  svg = d3.select('#d3-chart').select('svg').select('g');
-  if (svg.empty()) {
-    svg = d3.select('#d3-chart')
+  svg = d3.select('#d3-chart')
       .append('svg:svg')
       .attr('width', w)
       .attr('height', h)
-      .attr('class', 'viz')
-      .append('svg:g')
+      .attr('id', 'main-svg')
       .attr('transform', 'translate(' + margin + ',' + margin + ')');
-  }
+      // .append('svg:g')
 
-  t = svg.transition().duration(transitionDuration);
+  // t = svg.transition().duration(transitionDuration);
 
   function addLineStlyingToXTicks(){
     var $lines = $(".xTick .tick line"),
@@ -71,7 +68,7 @@ function draw(response) {
         newText,
         $textEl;
 
-    for(var i = 0; i < length; i++){
+    for( var i = 0; i < length; i++ ){
       if(data[i].isDay === false){
         $($lines[i]).attr(
           { 'stroke-width': strokeWidth, 'stroke': '#90ABB0' }
@@ -110,7 +107,7 @@ function draw(response) {
 // y ticks and labels gets placed second
   // y ticks and labels
   if (!yAxisGroup) {
-    yAxisGroup = svg.append('svg:g')
+    yAxisGroup = svg.append('svg:svg')
       .attr('class', 'yTick')
       .call(yAxis);
   }
@@ -129,19 +126,10 @@ function draw(response) {
   var dataLines = dataLinesGroup.selectAll('.data-line').data([data]);
 
   var line = d3.svg.line()
-    // assign the X function to plot our line as we wish
     .x(function(d,i) {
-      // verbose logging to show what's actually being done
-      //console.log('Plotting X temp for date: ' + d.date + ' using index: ' + i + ' to be at: ' + x(d.date) + ' using our xScale.');
-      // return the X coordinate where we want to plot this datapoint
-      //return x(i);
       return x(d.date); 
     })
-    .y(function(d) { 
-      // verbose logging to show what's actually being done
-      //console.log('Plotting Y temp for data temp: ' + d.temp + ' to be at: ' + y(d.temp) + " using our yScale.");
-      // return the Y coordinate where we want to plot this datapoint
-      //return y(d); 
+    .y(function(d) {
       return y(d.temp); 
     })
     .interpolate("linear");
@@ -149,12 +137,10 @@ function draw(response) {
   var garea = d3.svg.area()
     .interpolate("linear")
     .x(function(d) { 
-      // verbose logging to show what's actually being done
       return x(d.date); 
     })
     .y0(h - margin * 2)
     .y1(function(d) { 
-      // verbose logging to show what's actually being done
       return y(d.outdoor_temp); 
     });
 
@@ -166,18 +152,15 @@ function draw(response) {
 
   dataLines.enter().append('path')
     .attr('class', 'data-line')
-    .style('opacity', 0.3)
+    // comment back in for low to high opacity transitions
+    // .style('opacity', 0.3)
     .attr("d", line(data))
-    .transition()
-    .delay(transitionDuration / 2)
-    .duration(transitionDuration)
+    // .transition()
+    // .delay(transitionDuration / 2)
+    // .duration(transitionDuration)
     .style('opacity', 1);
-    // .attr('x1', function(d, i) { return (i > 0) ? xScale(data[i - 1].date) : xScale(d.date); })
-    // .attr('y1', function(d, i) { return (i > 0) ? yScale(data[i - 1].temp) : yScale(d.temp); })
-    // .attr('x2', function(d) { return xScale(d.date); })
-    // .attr('y2', function(d) { return yScale(d.temp); });
     
-
+  // comment back in for slide up transition 
   // dataLines.transition()
   //   .attr("d", line)
   //   .duration(transitionDuration)
@@ -196,13 +179,15 @@ function draw(response) {
     .style('opacity', 1e-6)
     .remove();
 
-  d3.selectAll(".area").transition()
-    .duration(transitionDuration)
+  d3.selectAll(".area")
+  //   .transition()
+  //   .duration(transitionDuration)
     .attr("d", garea(data));
 
   // move the area to the back of the graph
-  var fillArea = $(".area")
-  $("#d3-chart svg > g").prepend(fillArea)
+  var $garea = $(".area").last();
+  $("#main-svg").prepend($garea);
+
 
   // add number of violations to the legend
   $("#violations span").text($("#violations span")
@@ -294,6 +279,54 @@ function draw(response) {
         + '<br>Temperature Outside: ' + d.outdoor_temp + '°'
         + '<br>Legal minimum: ' + legalMinimumFor(d) + '°';
     }
+  });
+
+  // Create scrolling line
+  var lineMarker = svg.append("line")
+    .attr("x1", 0)
+    .attr("y1", 0)
+    .attr("x2", 0)
+    .attr("y2", h)
+    .attr("stroke-width", 5)
+    .attr("stroke", "black")
+    .style('display', 'none')
+    .style('pointer-events', 'none');
+
+  // var circleMarker = svg.append('circle')
+  //   .attr('r', 7)
+  //   .style('display', 'none')
+  //   .style('fill', '#FFFFFF')
+  //   .style('pointer-events', 'none')
+  //   .style('stroke', '#000')
+  //   .style('stroke-width', '3px');
+
+
+  // Create custom bisector
+  var bisect = d3.bisector(function(datum) {
+    return datum.date;
+  }).left;
+
+
+  // Add event listeners/handlers
+  svg.on('mouseover', function() {
+    lineMarker.style('display', 'inherit');
+    // circleMarker.style('display', 'inherit');
+  }).on('mouseout', function() {
+    lineMarker.style('display', 'none');
+    // circleMarker.style('display', 'none');
+  }).on('mousemove', function() {
+    var mouse = d3.mouse(this);
+    lineMarker.attr('x1', mouse[0]);
+    lineMarker.attr('x2', mouse[0]);
+    // circleMarker.attr('cx', mouse[0]);
+    // var timestamp = scaleX.invert(mouse[0]),
+    //   index = bisect(data, timestamp),
+    //   startDatum = data[index - 1],
+    //   endDatum = data[index],
+    //   interpolate = d3.interpolateNumber(startDatum.value, endDatum.value),
+    //   range = endDatum.timestamp - startDatum.timestamp,
+    //   valueY = interpolate((timestamp % range) / range);
+    // circleMarker.attr('cy', scaleY(valueY));
   });
 }
 
