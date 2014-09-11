@@ -46,7 +46,7 @@ class UsersController < ApplicationController
         end
       end
       f.json do
-        @readings = current_user.readings.last(168)
+        @readings = current_user.get_latest_readings(168)
         render json: @readings
       end
     end
