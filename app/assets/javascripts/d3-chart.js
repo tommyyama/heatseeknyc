@@ -310,7 +310,7 @@ function draw(response) {
     lineMarker.attr('x1', mouse[0]);
     lineMarker.attr('x2', mouse[0]);
     circleMarker.attr('cx', mouse[0]);
-    var date = x.invert(mouse[0]),
+    var date = x.invert(mouse[0] - margin + 5),
       index = bisect(data.sort(function(a, b) { return a.date - b.date; }), date);
       // startDatum = data[index - 1],
       // endDatum = data[index],
