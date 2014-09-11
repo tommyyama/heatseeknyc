@@ -4,6 +4,13 @@ $(document).ready(function(){
   drawChartAjaxCall();
 });
 
+// to fix the problem with width
+// try to make all widths smaller by 3 margins
+// except the main-svg 
+// and float the main ones to the right
+// then move the y tick text to the left
+// taking up that extra space created
+
 function draw(response) {
       // Chart size
   var w = window.innerWidth,
@@ -44,7 +51,7 @@ function draw(response) {
     var min = d3.min(data, function(d) { return d.temp }) - 10;
   }
   var pointRadius = 4;
-  var x = d3.time.scale().range([0, w - margin * 2]).domain([data[0].date, data[data.length - 1].date]);
+  var x = d3.time.scale().range([0, w - margin * 3]).domain([data[0].date, data[data.length - 1].date]);
   var y = d3.scale.linear().range([h - margin * 2, 0]).domain([min, max]);
   var xAxis = d3.svg.axis().scale(x).tickSize(h - margin * 2).tickPadding(0).ticks(data.length);
   var yAxis = d3.svg.axis().scale(y).orient('left').tickSize(-w + margin * 2).tickPadding(0).ticks(7);
@@ -70,9 +77,10 @@ function draw(response) {
 
     for( var i = 0; i < length; i++ ){
       if(data[i].isDay === false){
-        $($lines[i]).attr(
-          { 'stroke-width': strokeWidth, 'stroke': '#90ABB0' }
-        );
+        $($lines[i]).attr({
+          'stroke-width': strokeWidth, 'stroke': '#90ABB0',
+          'x1': margin, 'x2': margin
+        });
         if(i === 0){
           $($lines[i]).attr({ 'stroke-width': strokeWidth * 1.9 });
         }
@@ -86,7 +94,7 @@ function draw(response) {
           $textEl = $($('.xTick .tick text')[i]);
           $textEl.text(newText);
           $textEl.show();
-          $textEl.attr({'x': -15, 'y': 380});
+          $textEl.attr({'x': margin - 15, 'y': 380});
         }
       }
     }
@@ -115,7 +123,9 @@ function draw(response) {
     t.select('.yTick').call(yAxis);
   }
   // fixes x value for text
-  $(".yTick .tick text").attr("x", "15")
+  $(".yTick .tick text").attr("x", "15");
+  // moves the x ticks to the right
+  $('.yTick .tick line').attr('x1', margin);
 
 
 // y ticks and labels gets placed third
@@ -127,13 +137,13 @@ function draw(response) {
   var dataLines = dataLinesGroup.selectAll('.data-line').data([data]);
 
   var line = d3.svg.line()
-    .x(function(d,i) { return x(d.date); })
+    .x(function(d,i) { return x(d.date) + margin; })
     .y(function(d) { return y(d.temp); })
     .interpolate("linear");
 
   var garea = d3.svg.area()
     .interpolate("linear")
-    .x(function(d) { return x(d.date); })
+    .x(function(d) { return x(d.date) + margin; })
     .y0(h - margin * 2)
     .y1(function(d) { return y(d.outdoor_temp); });
 
@@ -159,18 +169,8 @@ function draw(response) {
   //   .duration(transitionDuration)
   //   .style('opacity', 1)
   //   .attr('transform', function(d) {
-  //     return 'translate(' + x(d.date) + ',' + y(d.temp) + ')'; 
+  //     return 'translate(' + x(d.date) + margin + ',' + y(d.temp) + ')'; 
   //   });
-
-  dataLines.exit()
-    .transition()
-    .attr('d', line)
-    .duration(transitionDuration)
-    .attr('transform', function(d) {
-     return 'translate(' + x(d.date) + ',' + y(0) + ')'; 
-    })
-    .style('opacity', 1e-6)
-    .remove();
 
   d3.selectAll('.area')
     .attr('d', garea(data));
@@ -197,16 +197,16 @@ function draw(response) {
       .append('svg:circle')
       .attr('class', 'data-point')
       .style('opacity', 1)
-      .attr('cx', function(d) { return x(d.date) })
+      .attr('cx', function(d) { return x(d.date) + margin })
       // comment back in for cirlce transitions
-      // .attr('cy', function() { return y(0) })
+      // .attr('cy', function() { return y(0); })
       .attr('r', function(d) {
-        return d.violation ? pointRadius : 0;
+        return d.violation ? pointRadius : null;
       })
       // .transition()
       // .duration(transitionDuration)
       // .style('opacity', 1)
-      // .attr('cx', function(d) { return x(d.date) })
+      // .attr('cx', function(d) { return x(d.date) + margin; })
       .attr('cy', function(d) { return y(d.temp) });
   }
 
@@ -264,40 +264,53 @@ function draw(response) {
     .style('display', 'none')
     .style('pointer-events', 'none');
 
-  // var circleMarker = svg.append('circle')
-  //   .attr('r', 7)
-  //   .style('display', 'none')
-  //   .style('fill', '#FFFFFF')
-  //   .style('pointer-events', 'none')
-  //   .style('stroke', '#000')
-  //   .style('stroke-width', '3px');
+  var circleMarker = svg.append('circle')
+    .attr('r', 7)
+    .style('display', 'none')
+    .style('fill', '#FFFFFF')
+    .style('pointer-events', 'none')
+    .style('stroke', '#000')
+    .style('stroke-width', '3px');
 
 
-  // Create custom bisector
-  var bisect = d3.bisector(function(datum) {
-    return datum.date;
-  }).left;
+
+var domainX = d3.extent(data, function(d) {
+  return d.date;
+});
+
+// Ranges
+var rangeX = [0, w];
+
+// Scales
+var scaleX = d3.time.scale()
+  .domain(domainX)
+  .range(rangeX);
 
 
-  // Add event listeners/handlers
+  // Add event listeners/handlers for line tool-tip
   svg.on('mouseover', function() {
     lineMarker.style('display', 'inherit');
-    // circleMarker.style('display', 'inherit');
+    circleMarker.style('display', 'inherit');
   }).on('mouseout', function() {
     lineMarker.style('display', 'none');
-    // circleMarker.style('display', 'none');
+    circleMarker.style('display', 'none');
   }).on('mousemove', function() {
-    var mouse = d3.mouse(this);
+    var mouse = d3.mouse(this),
+    date = scaleX.invert(mouse[0]);
+    console.log(date);
+    console.log(circles);
+    console.log(mouse)
+
+
     lineMarker.attr('x1', mouse[0]);
     lineMarker.attr('x2', mouse[0]);
-    // circleMarker.attr('cx', mouse[0]);
-    // var timestamp = scaleX.invert(mouse[0]),
-    //   index = bisect(data, timestamp),
+
+
     //   startDatum = data[index - 1],
-    //   endDatum = data[index],
-    //   interpolate = d3.interpolateNumber(startDatum.value, endDatum.value),
-    //   range = endDatum.timestamp - startDatum.timestamp,
-    //   valueY = interpolate((timestamp % range) / range);
+    //   endDatum = data[index], 
+    //   interpolate = d3.interpolateNumber(startDatum.temp, endDatum.temp),
+    //   range = endDatum.date - startDatum.date,
+    //   valueY = interpolate((date % range) / range);
     // circleMarker.attr('cy', scaleY(valueY));
   });
 }
