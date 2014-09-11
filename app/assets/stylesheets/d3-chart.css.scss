@@ -25,6 +25,10 @@
       margin-left: 40px;
     }
 
+    svg:hover {
+      cursor: none;
+    }
+
     path {
       fill: none;
     }
@@ -68,6 +72,12 @@
     text {
       font-size: 1.25em;
     }
+  }
+
+  #line-tool-tip-text {
+    margin-right: 3%;
+    font-size: 1.5em;
+    margin-bottom: 5px;
   }
 
   #legend {

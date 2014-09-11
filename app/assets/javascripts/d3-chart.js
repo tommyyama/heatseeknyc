@@ -247,81 +247,80 @@ function draw(response) {
     }
   });
 
-// Create scrolling line
-  var lineMarker = svg.append("line")
-    .attr("x1", 0)
-    .attr("y1", 0)
-    .attr("x2", 0)
-    .attr("y2", h - margin * 2)
-    .attr("stroke-width", 5)
-    .attr("stroke", "black")
-    .style('display', 'none')
-    .style('pointer-events', 'none');
+  if (window.innerWidth > 1080) {
+  // Create scrolling line
+    var lineMarker = svg.append("line")
+      .attr("x1", 0)
+      .attr("y1", 0)
+      .attr("x2", 0)
+      .attr("y2", h - margin * 2)
+      .attr("stroke-width", 3)
+      .attr("stroke", "black")
+      .style('display', 'none')
+      .style('pointer-events', 'none');
 
-   var circleMarker = svg.append('circle')
-    .attr('r', 7)
-    .style('display', 'none')
-    .style('fill', '#FFFFFF')
-    .style('pointer-events', 'none')
-    .style('stroke', '#FB5050')
-    .style('stroke-width', '3px');
+     var circleMarker = svg.append('circle')
+      .attr('r', 5)
+      .style('display', 'none')
+      .style('fill', '#FFFFFF')
+      .style('pointer-events', 'none')
+      .style('stroke', '#000')
+      .style('stroke-width', '3px');
 
 
-  var domainX = d3.extent(data, function(d) {
-    return d.date;
-  });
+    var domainX = d3.extent(data, function(d) {
+      return d.date;
+    });
 
-  var domainY = d3.extent(data, function(d) {
-    return d.temp;
-  });
+    var domainY = d3.extent(data, function(d) {
+      return d.temp;
+    });
 
-  // Ranges
-  var rangeX = [0, w - margin * 2],
-    rangeY = [h, 0];
+    // Ranges
+    var rangeX = [0, w - margin * 2],
+      rangeY = [h, 0];
 
-  // Scales
-  // var scaleX = d3.time.scale()
-  //   .domain(domainX)
-  //   .range(rangeX);
+    // Create custom bisector
+    var bisect = d3.bisector(function(d) {
+      return d.date;
+    }).left;
 
-  // var scaleY = d3.scale.linear()
-  //   .domain(domainY)
-  //   .range(rangeY);
+    function setScrollinToolTipTextWith(datum){
+      $('#line-tool-tip-text').html(
+        'Indoor <b>' + datum.temp + '</b>°/Outdoor <b>'
+        + datum.outdoor_temp + '</b>°'
+      );
+    }
 
-  // Create custom bisector
-  var bisect = d3.bisector(function(d) {
-    return d.date;
-  }).left;
+    setScrollinToolTipTextWith(data[data.length -1]);
+    // Add event listeners/handlers for line tool-tip
+    svg.on('mouseover', function() {
 
-  // Add event listeners/handlers for line tool-tip
-  svg.on('mouseover', function() {
+      lineMarker.style('display', 'inherit');
+      circleMarker.style('display', 'inherit');
 
-    lineMarker.style('display', 'inherit');
-    circleMarker.style('display', 'inherit');
+    }).on('mouseout', function() {
 
-  }).on('mouseout', function() {
+      lineMarker.style('display', 'none');
+      circleMarker.style('display', 'none');
+      setScrollinToolTipTextWith(data[data.length -1]);
 
-    lineMarker.style('display', 'none');
-    circleMarker.style('display', 'none');
+    }).on('mousemove', function() {
 
-  }).on('mousemove', function() {
+      var mouse = d3.mouse(this),
+        date = x.invert(mouse[0] - margin - 5),
+        index = bisect(data, date),
+        currentDatum = data[index];
 
-    var mouse = d3.mouse(this);
-    lineMarker.attr('x1', mouse[0]);
-    lineMarker.attr('x2', mouse[0]);
-    circleMarker.attr('cx', mouse[0]);
-    var date = x.invert(mouse[0] - margin),
-      index = bisect(data, date);
-      // startDatum = data[index - 1],
-      // endDatum = data[index],
-      // interpolate = d3.interpolateNumber(startDatum.temp, endDatum.temp),
-      // range = endDatum.date - startDatum.date,
-      // valueY = interpolate((date % range) / range);
-    debugger
-    circleMarker.attr('cy', y(data[index].temp));
-
-  });
+      lineMarker.attr('x1', mouse[0]);
+      lineMarker.attr('x2', mouse[0]);
+      circleMarker.attr('cx', mouse[0]);
+      circleMarker.attr('cy', y(currentDatum.temp));
+      setScrollinToolTipTextWith(currentDatum);
+    });
+  }
 }
+
 
 function drawChartBasedOnScreenSize(chartData){
   if (window.innerWidth < 450) {
