@@ -4,13 +4,6 @@ $(document).ready(function(){
   drawChartAjaxCall();
 });
 
-// to fix the problem with width
-// try to make all widths smaller by 3 margins
-// except the main-svg 
-// and float the main ones to the right
-// then move the y tick text to the left
-// taking up that extra space created
-
 function draw(response) {
       // Chart size
   var w = window.innerWidth,
@@ -234,6 +227,7 @@ function draw(response) {
 
   $('svg circle').tipsy({ 
     gravity: 's',
+    trigger: 'click',
     html: true,
     topOffset: 2.8,
     leftOffset: 0.3,
@@ -253,7 +247,7 @@ function draw(response) {
     }
   });
 
-  // Create scrolling line
+// Create scrolling line
   var lineMarker = svg.append("line")
     .attr("x1", 0)
     .attr("y1", 0)
@@ -264,54 +258,68 @@ function draw(response) {
     .style('display', 'none')
     .style('pointer-events', 'none');
 
-  var circleMarker = svg.append('circle')
+   var circleMarker = svg.append('circle')
     .attr('r', 7)
     .style('display', 'none')
     .style('fill', '#FFFFFF')
     .style('pointer-events', 'none')
-    .style('stroke', '#000')
+    .style('stroke', '#FB5050')
     .style('stroke-width', '3px');
 
 
+  var domainX = d3.extent(data, function(d) {
+    return d.date;
+  });
 
-var domainX = d3.extent(data, function(d) {
-  return d.date;
-});
+  var domainY = d3.extent(data, function(d) {
+    return d.temp;
+  });
 
-// Ranges
-var rangeX = [0, w];
+  // Ranges
+  var rangeX = [0, w - margin * 2],
+    rangeY = [h, 0];
 
-// Scales
-var scaleX = d3.time.scale()
-  .domain(domainX)
-  .range(rangeX);
+  // Scales
+  // var scaleX = d3.time.scale()
+  //   .domain(domainX)
+  //   .range(rangeX);
 
+  // var scaleY = d3.scale.linear()
+  //   .domain(domainY)
+  //   .range(rangeY);
+
+  // Create custom bisector
+  var bisect = d3.bisector(function(d) {
+    return d.date;
+  }).left;
 
   // Add event listeners/handlers for line tool-tip
   svg.on('mouseover', function() {
+
     lineMarker.style('display', 'inherit');
     circleMarker.style('display', 'inherit');
+
   }).on('mouseout', function() {
+
     lineMarker.style('display', 'none');
     circleMarker.style('display', 'none');
+
   }).on('mousemove', function() {
-    var mouse = d3.mouse(this),
-    date = scaleX.invert(mouse[0]);
-    console.log(date);
-    console.log(circles);
-    console.log(mouse)
 
-
+    var mouse = d3.mouse(this);
     lineMarker.attr('x1', mouse[0]);
     lineMarker.attr('x2', mouse[0]);
+    circleMarker.attr('cx', mouse[0]);
+    var date = x.invert(mouse[0]),
+      index = bisect(data.sort(function(a, b) { return a.date - b.date; }), date);
+      // startDatum = data[index - 1],
+      // endDatum = data[index],
+      // interpolate = d3.interpolateNumber(startDatum.temp, endDatum.temp),
+      // range = endDatum.date - startDatum.date,
+      // valueY = interpolate((date % range) / range);
+    debugger
+    circleMarker.attr('cy', y(data[index].temp));
 
-
-    //   startDatum = data[index - 1],
-    //   endDatum = data[index], 
-    //   interpolate = d3.interpolateNumber(startDatum.temp, endDatum.temp),
-    //   range = endDatum.date - startDatum.date,
-    //   valueY = interpolate((date % range) / range);
-    // circleMarker.attr('cy', scaleY(valueY));
   });
 }
 

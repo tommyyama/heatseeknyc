@@ -40,6 +40,10 @@
       fill: $theme-red;
     }
 
+    .data-point:hover{
+      stroke: $theme-black;
+    }
+
     .yTick {
       g.tick {
         line {
