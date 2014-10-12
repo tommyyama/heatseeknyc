@@ -14,6 +14,7 @@
 //= require jquery_ujs
 //= require leaflet
 //= require bootstrap.min.js
+//= require bootstrap-datepicker
 //= require jquery.fitvids.js
 //= require jquery.scrolly.js
 //= require jquery.tipsy.js
