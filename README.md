@@ -1,8 +1,8 @@
-[![CodeShip](https://www.codeship.io/projects/13e8e870-b9be-0131-0742-5af5088413f2/status)](https://www.codeship.io/projects/13e8e870-b9be-0131-0742-5af5088413f2/status)
-[![Code Climate](https://codeclimate.com/github/wfjeff/twinenyc.png)](https://codeclimate.com/github/wfjeff/twinenyc)
+[![CodeShip](https://www.codeship.io/projects/13e8e870-b9be-0131-0742-5af5088413f2/status)](https://codeship.com/projects/20839)
+[![Code Climate](https://codeclimate.com/github/heatseeknyc/heatseeknyc.png)](https://codeclimate.com/github/heatseeknyc/heatseeknyc)
 [![Coverage Status](https://coveralls.io/repos/wfjeff/twinenyc/badge.png)](https://coveralls.io/r/wfjeff/twinenyc)
 
-#Heat Seek NYC
+# Heat Seek NYC
 
 ## Description
 
@@ -57,15 +57,37 @@ If you'd like to submit a pull request please adhere to the following:
 Your code must be tested. Please TDD your code!
 No single-character variables
 Two-spaces instead of tabs
-Single-quotes instead of double-quotes unless you are using string interpolation or escapes.
-General Rails/Ruby naming conventions for files and classes.
+Single-quotes instead of double-quotes unless you are using string interpolation or escapes
+General Rails/Ruby naming conventions for files and classes
+
+## Development Environment
+We use [Vagrant](https://vagrantup.com) to ensure all of our development environments are consistent.
+
+[Find out more about the vagrant virtual machine lifecycle.](https://docs.vagrantup.com/v2/getting-started/index.html)
+
+If you are on a mac:
+```
+git clone https://github.com/heatseeknyc/heatseeknyc.git
+brew install caskroom/cask/brew-cask
+brew cask install virtualbox vagrant
+vagrant plugin install vagrant-hostmanager vagrant-cachier
+cd heatseeknyc
+vagrant up
+vagrant ssh
+```
+
+On a mac, you'll be able to find your development environment by running:
+```
+open http://`whoami`.dev.heatseeknyc.com
+```
+The rails app lives in ```/vagrant/```
 
 ## Future
 
 This technology is currently in use by the [Urban Justice Center](http://www.urbanjustice.org/) who provided us with users for our proof-of-concept. We hope that this project will be used next heating season by advocacy groups like them.
 
 ## Authors
-[William Jeffries](http://www.linkedin.com/in/williamjeffries), and [Tristan Siegel](http://www.linkedin.com/in/tristantsiegel), students at the [Flatiron School](http://flatironschool.com/) in New York.
+[William Jeffries](http://www.linkedin.com/in/williamjeffries) and [Tristan Siegel](http://www.linkedin.com/in/tristantsiegel) in New York, and [Oliver Barnes](http://www.linkedin.com/in/oliverbarnes) in Sao Paulo.
 
 ## License
 This application is MIT Licensed. See [LICENSE](https://github.com/wfjeff/twinenyc/blob/master/LICENSE) for details.

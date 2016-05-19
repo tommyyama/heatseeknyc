@@ -20,3 +20,6 @@
 
 coverage
 .DS_Store
+
+#ignore the .vagrant file
+.vagrant

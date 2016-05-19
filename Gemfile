@@ -1,6 +1,8 @@
 source 'https://rubygems.org'
+ruby "2.1.3"
 
 gem 'airbrake'
+gem 'bootstrap-datepicker-rails'
 gem 'chartkick'
 gem 'coveralls', require: false
 gem 'devise'
@@ -8,6 +10,7 @@ gem 'ffi', "= 1.9.0"
 gem 'figaro'
 gem 'font-awesome-rails'
 gem 'google-analytics-rails'
+gem 'httparty'
 gem 'json'
 gem 'nokogiri'
 gem 'pg'
@@ -18,11 +21,18 @@ gem 'select2-rails'
 gem 'tumblr_client'
 gem 'tzinfo'
 gem 'will_paginate'
-gem 'wunderground'
 gem 'zip'
 gem 'rabl'
 gem 'yajl-ruby', :require => 'yajl'
 gem 'stripe'
+gem 'psych', '= 2.0.5'
+
+group :test do
+  gem 'memory_test_fix'
+  gem 'timecop'
+  gem 'vcr'
+  gem 'webmock'
+end
 
 group :test, :development do
   gem 'better_errors'
@@ -30,22 +40,26 @@ group :test, :development do
   gem 'capybara'
   gem 'database_cleaner'
   gem 'factory_girl_rails'
+  gem 'faker'
   gem 'guard-rspec'
   gem 'guard-spork'
   gem 'launchy'
   gem 'pry-nav'
   gem 'rails_layout'
   gem 'rspec-rails', '~> 2.14.2'
+  gem 'rubocop'
   gem 'selenium-webdriver'
   gem 'simplecov'
   gem 'spork-rails'
   gem 'sqlite3'
   gem 'travis'
-  gem 'vcr'
-  gem 'webmock'
+  gem 'spring' # keeps the rails process running for faster init times
+  #gem 'bullet' # detect n+1 errors
+  #gem 'brakeman' # auto security testing
+  #gem 'hakiri' # more automagic security
 end
 
-group :production do 
+group :production do
   gem 'rails_12factor'
 end
 
@@ -80,11 +94,8 @@ group :doc do
   gem 'sdoc', require: false
 end
 
-# Use ActiveModel has_secure_password
-# gem 'bcrypt-ruby', '~> 3.1.2'
-
 # Use unicorn as the app server
-# gem 'unicorn'
+gem 'unicorn'
 
 # Use Capistrano for deployment
 # gem 'capistrano', group: :development

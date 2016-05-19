@@ -9,15 +9,17 @@
 //
 // Read Sprockets README (https://github.com/sstephenson/sprockets#sprockets-directives) for details
 // about supported directives.
-//
+// 
 // external & vendor libraries
 //= require jquery
 //= require jquery_ujs
 //= require bootstrap.min.js
+//= require bootstrap-datepicker
 //= require jquery.fitvids.js
 //= require jquery.scrolly.js
 //= require jquery.tipsy.js
 //= require select2
+//= require wipe
 // 
 // top level js files
 //= require advocate

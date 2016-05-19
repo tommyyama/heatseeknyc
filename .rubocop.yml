@@ -1,0 +1,18 @@
+inherit_from: .rubocop_todo.yml
+
+AllCops:
+  TargetRubyVersion: 2.1
+
+Style/NegatedIf:
+  Enabled: false
+Style/NumericLiterals:
+  Enabled: false
+Style/AndOr:
+  Enabled: false
+
+Style/CaseEquality:
+  Exclude:
+    - 'app/services/weather_man.rb'
+Style/TrivialAccessors:
+  Exclude:
+    - 'app/services/weather_man.rb'

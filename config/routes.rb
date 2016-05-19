@@ -1,37 +1,53 @@
 Twinenyc::Application.routes.draw do
-  resources :articles
+  root "welcome#index"
 
-  get "welcome/index"
-  devise_for :users
+  devise_for :users, controllers: {
+    registrations: 'user/registrations'
+  }
+
+  resources :articles
+  resources :sensors
+  resources :twines, only: [:show, :new, :create]
+
   get 'users/search' => 'users#search', as: :search_user
   resources :users do
     resources :collaborations
+    collection do
+      get "edit_password"
+      patch "update_password"
+    end
   end
-  resources :twines, only: [:show, :new, :create]
-  resources :sensors
-  resources :charges
+
   post 'readings' => 'readings#create'
 
+  get 'addresses' => 'users#addresses'
   get 'users/:id/download' => 'users#download_pdf', as: :pdf_download
   get 'users/:id/live_update' => 'users#live_update'
   get 'users/:user_id/collaborations/:id/download' => 'users#download_pdf'
-  get "demo" => "users#demo"
 
+  get "demo" => "users#demo"
+  get "judges_login/:last_name" => "users#judges_login"
+
+  get "coldmap" => "complaint#index"
   get "complaints/query" => "complaint#query"
   get "complaints/" => "complaint#index"
-  get "coldmap/" => "complaint#index"
-  get "sponsors" => "welcome#sponsors"
-  get "resources" => "welcome#resources"
-  get "team" => "welcome#team"
+
+  get "blog" => "posts#index"
+
   get "about" => "welcome#about"
-  get "nycbigapps" => "welcome#nycbigapps"
-  get "vote-for-us" => "welcome#nycbigapps"
+  get "donate" => "welcome#donate"
+  get "giving-tuesday" => "welcome#giving_tuesday", as: :giving_tuesday
+  get "how-it-works" => "welcome#how_it_works", as: :how_it_works
   get "judges" => "welcome#judges_welcome"
-  get "judges_login/:last_name" => "users#judges_login"
-  # get "demo" => "welcome#demo"
+  get "nycbigapps" => "welcome#nycbigapps"
+  get "pilot" => "welcome#pilot"
   get "press" => "welcome#press"
-  get "blog" => "welcome#blog"
-  root 'welcome#index'
+  get "resources" => "welcome#resources"
+  get "sponsors" => "welcome#sponsors"
+  get "team" => "welcome#team"
+  get "thankyou" => "welcome#thankyou"
+  get "video" => "welcome#video"
+  get "vote-for-us" => "welcome#nycbigapps"
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

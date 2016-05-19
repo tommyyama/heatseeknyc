@@ -1,6 +1,54 @@
 require 'spec_helper'
 
 describe User do
+  describe "#inspect" do
+    let(:rick) do
+      create(
+        :user,
+        first_name: "Rick",
+        last_name: "Sanchez",
+        email: "rick@rickandmorty.com",
+        phone_number: nil
+      )
+    end
+
+    it "excludes identifying information when in anonymized mode" do
+      expect(rick.inspect).to include "first_name: \"#{rick.first_name}\""
+      expect(rick.inspect).to include "search_first_name: \"#{rick.search_first_name}\""
+      expect(rick.inspect).to include "last_name: \"#{rick.last_name}\""
+      expect(rick.inspect).to include "search_last_name: \"#{rick.search_last_name}\""
+      expect(rick.inspect).to include "apartment: \"#{rick.apartment}\""
+      expect(rick.inspect).to include "email: \"#{rick.email}\""
+      expect(rick.inspect).to include "phone_number: nil"
+      ENV["ANONYMIZED_FOR_LIVESTREAM"] = "TRUE"
+      expect(rick.inspect).to_not include "first_name: \"#{rick.first_name}\""
+      expect(rick.inspect).to_not include "search_first_name: \"#{rick.search_first_name}\""
+      expect(rick.inspect).to_not include "last_name: \"#{rick.last_name}\""
+      expect(rick.inspect).to_not include "search_last_name: \"#{rick.search_last_name}\""
+      expect(rick.inspect).to_not include "apartment: \"#{rick.apartment}\""
+      expect(rick.inspect).to_not include "email: \"#{rick.email}\""
+      expect(rick.inspect).to_not include "phone_number: nil"
+    end
+
+    it "includes non-identifying information" do
+      expect(rick.inspect).to include "id: #{rick.id}"
+      expect(rick.inspect).to include "address: \"#{rick.address}\""
+      expect(rick.inspect).to include "permissions: #{rick.permissions}"
+    end
+  end
+
+  it "has apartment" do
+    pat = create(:user)
+    pat.apartment = "2H"
+    expect(pat.apartment).to eq "2H"
+  end
+
+  it "has telephone" do
+    pat = create(:user)
+    pat.phone_number = "555-555-5555"
+    expect(pat.phone_number).to eq "555-555-5555"
+  end
+
 	describe "has a twine" do
 		it "can have a twine" do
 			twine1 = create(:twine)
@@ -54,4 +102,19 @@ describe User do
 			expect(user8.lawyer?).to be(false)
 		end
 	end
+
+  describe "sensor_codes_string" do
+    it "allows user save if corresponding sensors exist" do
+      create(:sensor, nick_name: '0000')
+      user = create(:user)
+      user.sensor_codes_string = '0000'
+      expect(user.save).to be_true
+    end
+
+    it "prevents user save if no corresponding sensors exist" do
+      user = create(:user)
+      user.sensor_codes_string = '0000'
+      expect(user.save).to be_false
+    end
+  end
 end

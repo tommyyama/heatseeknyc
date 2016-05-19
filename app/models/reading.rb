@@ -5,7 +5,6 @@ class Reading < ActiveRecord::Base
 
   validates :user_id, presence: true
   validates :temp, presence: true
-  validates :outdoor_temp, presence: true
 
   before_create :set_violation_boolean
 
@@ -24,22 +23,34 @@ class Reading < ActiveRecord::Base
     end
   end
 
+  def self.find_by_params(params)
+    sensor = Sensor.find_by(name: params[:sensor_name])
+    user = sensor.user
+    time = Time.at params[:time].to_i
+    temp = params[:temp].to_f.round
+
+    find_by(
+      sensor: sensor,
+      user: user,
+      temp: temp,
+      created_at: time
+    )
+  end
+
   def self.create_from_params(params)
     sensor = Sensor.find_by(name: params[:sensor_name])
-    temp = params[:temp]
-    time = Time.at params[:time].to_i
     user = sensor.user
-    outdoor_temp = WeatherMan.current_outdoor_temp(user.zip_code)
-  
-    options = {
-      sensor: sensor, 
-      user: user, 
-      temp: temp, 
+    time = Time.at params[:time].to_i
+    temp = params[:temp].to_f.round
+    outdoor_temp = WeatherMan.outdoor_temp_for(time, user.zip_code)
+
+    create(
+      sensor: sensor,
+      user: user,
+      temp: temp,
       outdoor_temp: outdoor_temp,
       created_at: time
-    }
-
-    self.create(options) if verification_valid? params[:verification]
+    )
   end
 
   def self.verification_valid?(code)

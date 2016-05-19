@@ -82,7 +82,7 @@ $theme-black-blue-3: #AFCDD4;
   }
 }
 
-.stylish-title {
+.stylish-title, .stylish-title-top {
   border-top: 4px solid $theme-black;
   border-bottom: 4px solid $theme-black;
   margin-top: 40px;
@@ -98,6 +98,9 @@ $theme-black-blue-3: #AFCDD4;
     font-size: 23px;
     line-height: 37px;
   }
+}
+.stylish-title-top {
+  margin-top: 0;
 }
 
 html, body {
@@ -121,13 +124,24 @@ main {
   float: right;
 }
 
-// .azure-footer {
-//   background-color: $theme-blue;
-//   clear: both;
-//   color: $theme-black;
-//   font-size: 20px;
-//   height: 153px;
-//   margin-top: -153px;
-//   position: relative;
-//   text-align: center;
-// }
+.btn-interest {
+  width: 200px;
+  display: block;
+  height: 50px;
+  background-color: $theme-grey-lighten-2;
+  border: 3px solid #000;
+  margin: 5% auto;
+  font-size: 2.5em;
+  color: #000 !important;
+  line-height: 1.7em;
+  position: absolute;
+  top: 34%;
+  left: 32%;
+
+  &:hover {
+    background-color: #000;
+    color: #fff !important;
+    text-decoration: none;
+    cursor: pointer;
+  }
+}
